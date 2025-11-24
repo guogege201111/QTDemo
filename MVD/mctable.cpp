@@ -22,6 +22,8 @@ QVariant MCTable::headerData(int section, Qt::Orientation orientation, int role)
             return section + 1;  // 垂直表头显示行号
         }
     }
+
+     return QVariant();
 }
 
 int MCTable::rowCount(const QModelIndex &parent) const
@@ -30,8 +32,6 @@ int MCTable::rowCount(const QModelIndex &parent) const
         return 0;
 
      return m_data.size();
-
-    // FIXME: Implement me!
 }
 
 int MCTable::columnCount(const QModelIndex &parent) const
@@ -40,7 +40,6 @@ int MCTable::columnCount(const QModelIndex &parent) const
         return 0;
 
      return m_headers.size();
-    // FIXME: Implement me!
 }
 
 QVariant MCTable::data(const QModelIndex &index, int role) const
@@ -111,14 +110,42 @@ void MCTable::insertRow(int row, const QVector<QVariant> &rowData)
     endInsertRows();
 }
 
-void MCTable::removeRow(int row)
+bool MCTable::removeRows(int row, int count, const QModelIndex &parent)
 {
-    if (row < 0 || row >= m_data.size())
-            return;
+    if (parent.isValid())
+        return false;  // 对于平面表格，parent 应该无效
 
-    beginRemoveRows(QModelIndex(), row, row);
+    if (row < 0 || row >= m_data.size())
+        return false;
+
+    beginRemoveRows(parent, row, row);
     m_data.removeAt(row);
     endRemoveRows();
+
+    return true;
+}
+
+void MCTable::removeRows(const QList<int> &rows)
+{
+    if (rows.isEmpty())
+           return;
+
+    // 将行号从大到小排序，这样删除时不会影响前面的行号
+    QList<int> sortedRows = rows;
+    std::sort(sortedRows.begin(), sortedRows.end(), std::greater<int>());
+
+    // 删除重复的行号
+    sortedRows.erase(std::unique(sortedRows.begin(), sortedRows.end()), sortedRows.end());
+
+    for (int row : sortedRows)
+    {
+        if (row >= 0 && row < m_data.size())
+        {
+            beginRemoveRows(QModelIndex(), row, row);
+            m_data.removeAt(row);
+            endRemoveRows();
+        }
+    }
 }
 
 void MCTable::clearAll()

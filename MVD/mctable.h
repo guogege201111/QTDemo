@@ -26,12 +26,12 @@ public:
     // 添加行操作的方法
     void addRow(const QVector<QVariant> &rowData);
     void insertRow(int row, const QVector<QVariant> &rowData);
-    void removeRow(int row);
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;// 删除单行
+    void removeRows(const QList<int> &rows);// 删除多行
     void clearAll();
 
     // 批量添加数据
     void setData(const QVector<QVector<QVariant>> &newData);
-
 
 private:
        QVector<QVector<QVariant>> m_data;  // 存储表格数据

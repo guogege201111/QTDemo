@@ -3,6 +3,7 @@
 #include "ui_mainwindow.h"
 #include <QItemSelectionModel>
 #include <QVariant>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -34,21 +35,32 @@ void MainWindow::deleteSelectedItem(QAbstractItemView *view)
     // 1. 获取选择模型
     QItemSelectionModel *selectModel = view->selectionModel();
     // 2. 获取所有选中的索引
-    QModelIndexList selectList = selectModel->selectedIndexes();
+    QModelIndexList selectedRows = selectModel->selectedRows();
 
+     qDebug() << "selectedIndexes :" << selectedRows.size();
     // 3. 如果没有选中项，直接返回
-    if (selectList.isEmpty())
+    if (selectedRows.isEmpty())
         return;
 
     // 4. 获取数据模型
     QAbstractItemModel *model = view->model();
-    // 5. 删除选中项（注意：要从后往前删除，避免索引变化）
-    for(int i = selectList.count()-1;i>= 0;i--)
-    {
-        QModelIndex index = selectList.at(i);
-        if(index.isValid())
-            model->removeRow(index.row(),index.parent());
+
+    // 5. 提取行号并排序（从大到小）
+    QList<int> rowsToDelete;
+    for (const QModelIndex &index : selectedRows) {
+        rowsToDelete.append(index.row());
+        qDebug() << "selectedIndexes :" << index;
     }
+
+    // 排序并从大到小删除
+    std::sort(rowsToDelete.begin(), rowsToDelete.end(), std::greater<int>());
+    rowsToDelete.erase(std::unique(rowsToDelete.begin(), rowsToDelete.end()), rowsToDelete.end());
+
+    // 6. 删除行
+    for (int row : rowsToDelete) {
+        model->removeRow(row);  // 不传递parent参数，使用默认值
+    }
+
     // 6. 清除选择
     selectModel->clearSelection();
 }
@@ -85,7 +97,24 @@ void MainWindow::on_pbtnAddTable_clicked()
 
 void MainWindow::on_pbtnDeleteTable_clicked()
 {
+//    QModelIndexList selectedIndexes = ui->tableView->selectionModel()->selectedRows();
+//    if (selectedIndexes.isEmpty()) {
+//        return;
+//    }
 
+//    for(int i = selectedIndexes.count()-1;i>=0;i--){
+//        QModelIndex index = selectedIndexes.at(i);
+//        mtable->removeRow(index.row());
+//    }
+
+    // 获取选中的行号
+//    QList<int> selectedRows;
+//    for (const QModelIndex &index : selectedIndexes) {
+//        selectedRows.append(index.row());
+//    }
+//    mtable->removeRows(selectedRows);
+
+    deleteSelectedItem(ui->tableView);
 }
 
 void MainWindow::slotSelectModelChanged()
