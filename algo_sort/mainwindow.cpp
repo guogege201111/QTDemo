@@ -39,3 +39,24 @@ void MainWindow::bubbleSort(int *srcArr, int size)
     }
 }
 
+void MainWindow::selectSort(int *srcArr, int size)
+{
+    for(int i = 0; i < size - 1; i++)
+    {
+        int minIndex = i;
+        // 找到未排序部分中最小值
+        for(int j = i + 1; j < size; j++)
+        {
+            if(srcArr[j] < srcArr[minIndex])
+               minIndex = j;
+        }
+        // 如果未排序最小值下标和已排序最小值不一样，则交换两者位置
+        if(minIndex != i)
+        {
+            int temp;
+            temp = srcArr[minIndex];
+            srcArr[minIndex] = srcArr[i];
+            srcArr[i] = temp;
+        }
+    }
+}

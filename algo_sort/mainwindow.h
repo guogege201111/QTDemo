@@ -16,6 +16,8 @@ public:
     ~MainWindow();
 private:
     void bubbleSort(int*srcArr,int size);
+
+    void selectSort(int*srcArr,int size);
 private:
     Ui::MainWindow *ui;
 
