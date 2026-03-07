@@ -13,6 +13,18 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::swapAB(int &a, int &b)
+{
+    int temp = 0;
+
+    temp = a;
+
+    a = b;
+
+    b = temp;
+
+}
+
 void MainWindow::bubbleSort(int *srcArr, int size)
 {
     bool swapped;
@@ -59,4 +71,24 @@ void MainWindow::selectSort(int *srcArr, int size)
             srcArr[i] = temp;
         }
     }
+}
+
+void MainWindow::insertSort(int *srcArr, int size)
+{
+    for(int i = 1;i<size;i++)
+    {
+        int key = srcArr[i];
+
+        int j = i-1;
+
+        while(srcArr[j] > key && j >= 0)
+        {
+            srcArr[j+1] = srcArr[j];
+
+            j--;
+        }
+
+        srcArr[j+1] = key;
+    }
+
 }

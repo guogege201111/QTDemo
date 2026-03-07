@@ -15,9 +15,13 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private:
+    void swapAB(int &a, int &b);
+
     void bubbleSort(int*srcArr,int size);
 
     void selectSort(int*srcArr,int size);
+
+    void insertSort(int*srcArr,int size);
 private:
     Ui::MainWindow *ui;
 
